@@ -17,6 +17,12 @@ namespace SnowLoad {
 	bool all = false;
 	double pg;
 	double angle;
+	double ce;
+	double ct;
+	double is;
+	double pf;
+	double cs;
+	double ps;
 
 	/// <summary>
 	/// Summary for MyForm
@@ -59,7 +65,8 @@ namespace SnowLoad {
 
 
 		private: System::Windows::Forms::Label^ deg;
-		private: System::Windows::Forms::Label^ CsLabel;
+	private: System::Windows::Forms::Label^ SlipLabel;
+
 		private: System::Windows::Forms::ComboBox^ CsDrop;
 		private: System::Windows::Forms::Label^ IsLabel;
 		private: System::Windows::Forms::ComboBox^ IsDrop;
@@ -107,7 +114,7 @@ namespace SnowLoad {
 				this->AngleBox = (gcnew System::Windows::Forms::TextBox());
 				this->AngelLabel = (gcnew System::Windows::Forms::Label());
 				this->deg = (gcnew System::Windows::Forms::Label());
-				this->CsLabel = (gcnew System::Windows::Forms::Label());
+				this->SlipLabel = (gcnew System::Windows::Forms::Label());
 				this->CsDrop = (gcnew System::Windows::Forms::ComboBox());
 				this->IsLabel = (gcnew System::Windows::Forms::Label());
 				this->IsDrop = (gcnew System::Windows::Forms::ComboBox());
@@ -243,18 +250,18 @@ namespace SnowLoad {
 				this->deg->TabIndex = 8;
 				this->deg->Text = L"°";
 				// 
-				// CsLabel
+				// SlipLabel
 				// 
-				this->CsLabel->AccessibleDescription = L"";
-				this->CsLabel->AutoSize = true;
-				this->CsLabel->Font = (gcnew System::Drawing::Font(L"Courier New", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				this->SlipLabel->AccessibleDescription = L"";
+				this->SlipLabel->AutoSize = true;
+				this->SlipLabel->Font = (gcnew System::Drawing::Font(L"Courier New", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 					static_cast<System::Byte>(0)));
-				this->CsLabel->Location = System::Drawing::Point(63, 471);
-				this->CsLabel->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
-				this->CsLabel->Name = L"CsLabel";
-				this->CsLabel->Size = System::Drawing::Size(26, 17);
-				this->CsLabel->TabIndex = 9;
-				this->CsLabel->Text = L"Cs";
+				this->SlipLabel->Location = System::Drawing::Point(63, 471);
+				this->SlipLabel->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+				this->SlipLabel->Name = L"SlipLabel";
+				this->SlipLabel->Size = System::Drawing::Size(80, 17);
+				this->SlipLabel->TabIndex = 9;
+				this->SlipLabel->Text = L"Slippery";
 				// 
 				// CsDrop
 				// 
@@ -265,7 +272,7 @@ namespace SnowLoad {
 				this->CsDrop->Location = System::Drawing::Point(142, 471);
 				this->CsDrop->Margin = System::Windows::Forms::Padding(4);
 				this->CsDrop->Name = L"CsDrop";
-				this->CsDrop->Size = System::Drawing::Size(148, 25);
+				this->CsDrop->Size = System::Drawing::Size(210, 25);
 				this->CsDrop->TabIndex = 10;
 				this->CsDrop->Text = L"Surface";
 				this->CsDrop->SelectionChangeCommitted += gcnew System::EventHandler(this, &MyForm::CsDrop_SelectionChangeCommitted);
@@ -293,7 +300,7 @@ namespace SnowLoad {
 				this->IsDrop->Location = System::Drawing::Point(142, 535);
 				this->IsDrop->Margin = System::Windows::Forms::Padding(4);
 				this->IsDrop->Name = L"IsDrop";
-				this->IsDrop->Size = System::Drawing::Size(148, 25);
+				this->IsDrop->Size = System::Drawing::Size(179, 25);
 				this->IsDrop->TabIndex = 12;
 				this->IsDrop->Text = L"Importance Factor";
 				this->IsDrop->SelectionChangeCommitted += gcnew System::EventHandler(this, &MyForm::IsDrop_SelectionChangeCommitted);
@@ -373,7 +380,7 @@ namespace SnowLoad {
 				// 
 				this->AutoScaleDimensions = System::Drawing::SizeF(9, 17);
 				this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-				this->ClientSize = System::Drawing::Size(1352, 735);
+				this->ClientSize = System::Drawing::Size(981, 708);
 				this->Controls->Add(this->radioSheltered);
 				this->Controls->Add(this->radioPart);
 				this->Controls->Add(this->radioFull);
@@ -382,7 +389,7 @@ namespace SnowLoad {
 				this->Controls->Add(this->IsDrop);
 				this->Controls->Add(this->IsLabel);
 				this->Controls->Add(this->CsDrop);
-				this->Controls->Add(this->CsLabel);
+				this->Controls->Add(this->SlipLabel);
 				this->Controls->Add(this->deg);
 				this->Controls->Add(this->AngleBox);
 				this->Controls->Add(this->AngelLabel);
@@ -441,17 +448,7 @@ namespace SnowLoad {
 				std::string s = msclr::interop::marshal_as<std::string>(Pgbox->Text);
 				pg = std::stod(s);
 			}
-		}
-
-
-		private: System::Void Submit_Click(System::Object^ sender, System::EventArgs^ e) {
-		
-			Output->Text = "button pressed";
-			std::string a = std::to_string(pg);
-			String^ s = msclr::interop::marshal_as <String^>(a);
-			Output->Text = s;
-		}
-		
+		}		
 
 		private: System::Void Terrain_SelectionChangeCommitted(System::Object^ sender, System::EventArgs^ e) {
 			if (Terrain->SelectedItem == "Above treeling in windswept mountainous areas" || Terrain->SelectedItem == "In Alaska, in areas where there are no trees within 2 miles") {
@@ -472,6 +469,7 @@ namespace SnowLoad {
 			Submit->Enabled = all;
 
 		}
+
 		private: System::Void radioFull_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 			if (radioFull->Checked || radioPart->Checked || radioSheltered->Checked) {
 				selected[2] = true;
@@ -484,6 +482,7 @@ namespace SnowLoad {
 				Submit->Enabled = all;
 			}
 		}
+
 		private: System::Void radioPart_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 			if (radioFull->Checked || radioPart->Checked || radioSheltered->Checked) {
 				selected[2] = true;
@@ -496,6 +495,7 @@ namespace SnowLoad {
 				Submit->Enabled = all;
 			}
 		}
+
 		private: System::Void radioSheltered_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
 			if (radioFull->Checked || radioPart->Checked || radioSheltered->Checked) {
 				selected[2] = true;
@@ -508,6 +508,7 @@ namespace SnowLoad {
 				Submit->Enabled = all;
 			}
 		}
+
 		private: System::Void CtDrop_SelectionChangeCommitted(System::Object^ sender, System::EventArgs^ e) {
 			selected[3] = true;
 			//check if all are selected
@@ -557,6 +558,7 @@ namespace SnowLoad {
 				angle = std::stod(s);
 			}
 		}
+
 		private: System::Void CsDrop_SelectionChangeCommitted(System::Object^ sender, System::EventArgs^ e) {
 			selected[5] = true;
 			//check if all are selected
@@ -567,6 +569,7 @@ namespace SnowLoad {
 
 			Submit->Enabled = all;
 		}
+
 		private: System::Void IsDrop_SelectionChangeCommitted(System::Object^ sender, System::EventArgs^ e) {
 			selected[6] = true;
 			//check if all are selected
@@ -577,8 +580,130 @@ namespace SnowLoad {
 
 			Submit->Enabled = all;
 		}
+
 		private: System::Void Drop_MouseClick(System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
 			safe_cast<ComboBox^>(sender)->DroppedDown = true;
+		}
+
+		private: System::Void Submit_Click(System::Object^ sender, System::EventArgs^ e) {
+			//exposure factor (Ce) Calculations
+			int terraincat = Terrain->SelectedIndex;
+			switch (terraincat) {
+				case 0:
+					//terrain category B
+					if (radioFull->Checked) {
+						//fully exposed
+						ce = 0.9;
+					} else if (radioPart->Checked) {
+						//partially exposed
+						ce = 1.0;
+					} else {
+						//Sheltered
+						ce = 1.2;
+					}
+					break;
+				case 1:
+					//terrain category C
+					if (radioFull->Checked) {
+						//fully exposed
+						ce = 0.9;
+					} else if (radioPart->Checked) {
+						//partially exposed
+						ce = 1.0;
+					} else {
+						//Sheltered
+						ce = 1.1;
+					}
+					break;
+				case 2:
+					//terrain category D
+					if (radioFull->Checked) {
+						//fully exposed
+						ce = 0.8;
+					} else if (radioPart->Checked) {
+						//partially exposed
+						ce = 0.9;
+					} else {
+						//Sheltered
+						ce = 1.0;
+					}
+					break;
+				case 3:
+					//terrain category above treeline
+					if (radioFull->Checked) {
+						//fully exposed
+						ce = 0.7;
+					} else {
+						//partially exposed
+						ce = 0.8;
+					}
+					break;
+				default:
+					//terrain category alaska
+					if (radioFull->Checked) {
+						//fully exposed
+						ce = 0.7;
+					} else {
+						//partially exposed
+						ce = 0.8;
+					}
+					break;
+			}
+
+			//Thermal Factor (Ct) calculations
+			int thermalcondition = CtDrop->SelectedIndex;
+			switch (thermalcondition) {
+				case 0:
+					//all other structures
+					ct = 1.0;
+					break;
+				case 1:
+					//heated
+					ct = 1.1;
+					break;
+				case 2:
+					//unheated
+					ct = 1.2;
+					break;
+				case 3:
+					//intentionally cold
+					ct = 1.3;
+					break;
+				default:
+					//greenhouses
+					ct = 0.85;
+					break;
+			}
+
+			//Importance factor (Is) calculations
+			int importance = IsDrop->SelectedIndex;
+			switch (importance) {
+			case 0:
+				//I
+				is = 0.8;
+				break;
+			case 1:
+				//II
+				is = 1.0;
+				break;
+			case 2:
+				//III
+				is = 1.1;
+				break;
+			default:
+				//IV
+				is = 1.2;
+				break;
+			}
+			//Pf calculations
+			pf = 0.7 * ce * ct * is * pg;
+
+			//Cs calculations
+
+
+			std::string a = std::to_string(pf);
+			String^ s = msclr::interop::marshal_as <String^>(a);
+			Output->Text = s;
 		}
 	};
 }
