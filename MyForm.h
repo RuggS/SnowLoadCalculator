@@ -453,7 +453,12 @@ namespace SnowLoad {
 		private: System::Void Terrain_SelectionChangeCommitted(System::Object^ sender, System::EventArgs^ e) {
 			if (Terrain->SelectedItem == "Above treeling in windswept mountainous areas" || Terrain->SelectedItem == "In Alaska, in areas where there are no trees within 2 miles") {
 				radioSheltered->Enabled = false;
-				radioSheltered->Checked = false;
+				if (radioSheltered->Checked) {
+					radioSheltered->Checked = false;
+					selected[2] = false;
+					all = false;
+				}
+				
 			}
 			else {
 				radioSheltered->Enabled = true;
@@ -699,10 +704,78 @@ namespace SnowLoad {
 			pf = 0.7 * ce * ct * is * pg;
 
 			//Cs calculations
+			
+			//slippery roof
+			bool slip;
+			slip = (CsDrop->SelectedIndex == 0);
 
+			//warm roofs
+			if (ct <= 1.0) {
+				if (slip) {//slippery
+					if (angle <= 5) {
+						cs = 1.0;
+					} else if (angle < 70) {
+						cs = 1.0 - ((angle - 5) / 65);
+					} else {
+						cs = 0;
+					}
+				} else {//non slippery
+					if (angle <= 30) {
+						cs = 1.0;
+					} else if (angle < 70) {
+						cs = 1.0 - ((angle - 30) / 40);
+					} else {
+						cs = 0;
+					}
+				}
+			} else if (ct == 1.1) {//sort of cold roofs
+				if (slip) {//slippery
+					if (angle <= 10) {
+						cs = 1.0;
+					} else if (angle < 70) {
+						cs = 1.0 - ((angle - 10) / 60);
+					} else {
+						cs = 0;
+					}
+				} else {//non slippery
+					if (angle <= 37.5) {
+						cs = 1.0;
+					} else if (angle < 70) {
+						cs = 1.0 - ((angle - 37.5) / 32.5);
+					} else {
+						cs = 0;
+					}
+				}
+			} else {//cold roofs (ct >= 1.2
+				if (slip) {//slippery
+					if (angle <= 15) {
+						cs = 1.0;
+					} else if (angle < 70) {
+						cs = 1.0 - ((angle - 15) / 55);
+					} else {
+						cs = 0;
+					}
+				} else {//non slippery
+					if (angle <= 45) {
+						cs = 1.0;
+					} else if (angle < 70) {
+						cs = 1.0 - ((angle - 45) / 25);
+					} else {
+						cs = 0;
+					}
+				}
+			}
 
+			ps = cs * pf;
+			std::string out = "Pf = ";
 			std::string a = std::to_string(pf);
-			String^ s = msclr::interop::marshal_as <String^>(a);
+			out += a;
+			out += '\n';
+			a = std::to_string(ps);
+			out += "Ps = ";
+			out += a;
+			out += '\n';
+			String^ s = msclr::interop::marshal_as <String^>(out);
 			Output->Text = s;
 		}
 	};
