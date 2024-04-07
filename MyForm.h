@@ -21,6 +21,7 @@ namespace SnowLoad {
 	double ct;
 	double is;
 	double pf;
+	double pfMin = 999999;
 	double cs;
 	double ps;
 
@@ -80,6 +81,9 @@ namespace SnowLoad {
 		private: System::Windows::Forms::RadioButton^ radioPart;
 
 		private: System::Windows::Forms::RadioButton^ radioSheltered;
+	private: System::Windows::Forms::Label^ label1;
+	private: System::Windows::Forms::TextBox^ PfMinBox;
+
 
 
 		
@@ -123,6 +127,8 @@ namespace SnowLoad {
 				this->radioFull = (gcnew System::Windows::Forms::RadioButton());
 				this->radioPart = (gcnew System::Windows::Forms::RadioButton());
 				this->radioSheltered = (gcnew System::Windows::Forms::RadioButton());
+				this->label1 = (gcnew System::Windows::Forms::Label());
+				this->PfMinBox = (gcnew System::Windows::Forms::TextBox());
 				this->SuspendLayout();
 				// 
 				// PgLabel
@@ -376,11 +382,38 @@ namespace SnowLoad {
 				this->radioSheltered->UseVisualStyleBackColor = true;
 				this->radioSheltered->CheckedChanged += gcnew System::EventHandler(this, &MyForm::radioSheltered_CheckedChanged);
 				// 
+				// label1
+				// 
+				this->label1->AccessibleDescription = L"";
+				this->label1->AutoSize = true;
+				this->label1->Font = (gcnew System::Drawing::Font(L"Courier New", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+					static_cast<System::Byte>(0)));
+				this->label1->Location = System::Drawing::Point(464, 54);
+				this->label1->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
+				this->label1->Name = L"label1";
+				this->label1->Size = System::Drawing::Size(53, 17);
+				this->label1->TabIndex = 19;
+				this->label1->Text = L"PfMin";
+				// 
+				// PfMinBox
+				// 
+				this->PfMinBox->Font = (gcnew System::Drawing::Font(L"Courier New", 11.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+					static_cast<System::Byte>(0)));
+				this->PfMinBox->Location = System::Drawing::Point(577, 44);
+				this->PfMinBox->Margin = System::Windows::Forms::Padding(4);
+				this->PfMinBox->Name = L"PfMinBox";
+				this->PfMinBox->Size = System::Drawing::Size(148, 24);
+				this->PfMinBox->TabIndex = 20;
+				this->PfMinBox->TextChanged += gcnew System::EventHandler(this, &MyForm::PfMinBox_TextChanged);
+				this->PfMinBox->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &MyForm::PfMinBox_KeyPress);
+				// 
 				// MyForm
 				// 
 				this->AutoScaleDimensions = System::Drawing::SizeF(9, 17);
 				this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 				this->ClientSize = System::Drawing::Size(981, 708);
+				this->Controls->Add(this->PfMinBox);
+				this->Controls->Add(this->label1);
 				this->Controls->Add(this->radioSheltered);
 				this->Controls->Add(this->radioPart);
 				this->Controls->Add(this->radioFull);
@@ -766,6 +799,7 @@ namespace SnowLoad {
 				}
 			}
 
+			pf = min(pf, pfMin);
 			ps = cs * pf;
 			std::string out = "Pf = ";
 			std::string a = std::to_string(pf);
@@ -777,6 +811,33 @@ namespace SnowLoad {
 			out += '\n';
 			String^ s = msclr::interop::marshal_as <String^>(out);
 			Output->Text = s;
+		}
+
+		private: System::Void PfMinBox_TextChanged(System::Object^ sender, System::EventArgs^ e) {
+			//check if contains a valid number, else defualt to 999999
+			if (PfMinBox->Text->Length == 1 && !PfMinBox->Text->Contains(".")) {
+				std::string s = msclr::interop::marshal_as<std::string>(PfMinBox->Text);
+				pfMin = std::stod(s);
+			} else if (PfMinBox->Text->Length >= 2) {
+				std::string s = msclr::interop::marshal_as<std::string>(PfMinBox->Text);
+				pfMin = std::stod(s);
+			} else {
+				pfMin = 999999;
+			}
+
+		}
+
+		private: System::Void PfMinBox_KeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e) {
+		   //accept only one possible '.'
+		   if (e->KeyChar == '.') {
+			   if (this->PfMinBox->Text->Contains(".") && !this->PfMinBox->SelectedText->Contains(".")) {
+				   e->Handled = true;//its done and needs no more handling (bypass key reaching text box)
+			   }
+		   }//accept digits and backspace
+		   else if (!Char::IsDigit(e->KeyChar) && e->KeyChar != 0x08) {
+			   e->Handled = true;
+		   }
+
 		}
 	};
 }
